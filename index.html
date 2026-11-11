@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smarter-Book | Seetsa Health Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3faf9;--surface:#ffffff;--surface2:#e3f4f2;--ink:#0d2b2e;--muted:#4a6669;
+  --primary:#0b7a75;--primary-ink:#ffffff;--accent:#1d8fd1;--line:#cfe5e3;
+  --ok:#16794a;--ok-bg:#dff5e8;--err:#b3382c;--err-bg:#fde7e4;--shadow:0 8px 28px rgba(11,122,117,.12);
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#08181a;--surface:#102529;--surface2:#16363a;--ink:#e6f5f4;--muted:#9bbbbd;
+    --primary:#3fc1b8;--primary-ink:#052225;--accent:#6cc0ee;--line:#234549;
+    --ok:#6fdc9f;--ok-bg:#12372a;--err:#ff9a8d;--err-bg:#3d1c19;--shadow:0 8px 28px rgba(0,0,0,.4);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08181a;--surface:#102529;--surface2:#16363a;--ink:#e6f5f4;--muted:#9bbbbd;
+  --primary:#3fc1b8;--primary-ink:#052225;--accent:#6cc0ee;--line:#234549;
+  --ok:#6fdc9f;--ok-bg:#12372a;--err:#ff9a8d;--err-bg:#3d1c19;--shadow:0 8px 28px rgba(0,0,0,.4);color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth;font-size:100%}
+html[data-text="large"]{font-size:120%}
+html[data-text="xlarge"]{font-size:140%}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface2)}
+.seg button{min-height:44px;min-width:44px;border:0;background:transparent;color:var(--ink);font-family:inherit;font-weight:700;cursor:pointer;padding:0 .5rem}
+.seg button:hover{background:var(--line)}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--primary-ink)}
+.seg button:focus-visible{outline-offset:-3px}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6;transition:background .3s,color .3s}
+a{color:var(--primary)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1120px,100% - 2rem);margin-inline:auto}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:1rem;padding:.7rem 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.25rem;text-decoration:none;color:var(--ink)}
+.brand svg{width:34px;height:34px}
+nav{display:flex;gap:1.2rem;margin-left:auto;flex-wrap:wrap}
+nav a{color:var(--ink);text-decoration:none;font-weight:700;padding:.3rem 0;border-bottom:2px solid transparent}
+nav a{white-space:nowrap}nav a:hover{border-color:var(--primary)}nav a[aria-current="page"]{border-color:var(--primary);color:var(--primary)}.page{display:none}.page.active{display:block}.ph{font-size:clamp(1.9rem,4.4vw,2.8rem)}.two{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}.fx{display:grid;gap:.9rem;margin-top:1.2rem}.fx .item{border-left:6px solid var(--primary)}.fx ul{margin:.4rem 0 0;padding-left:1.2rem}
+.tools{display:flex;gap:.5rem}
+.icon-btn{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;min-height:44px;min-width:44px;padding:0 .9rem;font:inherit;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.icon-btn:hover{border-color:var(--primary)}
+.icon-btn svg{width:20px;height:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.7rem 1.4rem;border-radius:12px;border:2px solid var(--primary);background:var(--primary);color:var(--primary-ink);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--primary)}
+.btn.small{min-height:40px;padding:.4rem .9rem;font-size:.95rem}
+.btn.danger{border-color:var(--err);color:var(--err);background:transparent}
+.hero{padding:clamp(2.5rem,7vw,5.5rem) 0;display:grid;grid-template-columns:1.2fr .8fr;gap:2.5rem;align-items:center}
+h1{font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.1;margin:0 0 1rem;letter-spacing:-.02em}
+h2{font-size:clamp(1.6rem,3.4vw,2.2rem);line-height:1.2;margin:0 0 .6rem}
+h3{margin:0 0 .3rem;font-size:1.15rem}
+.lead{font-size:1.2rem;color:var(--muted);max-width:55ch;margin:0 0 1.6rem}
+.cta{display:flex;gap:.8rem;flex-wrap:wrap}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:1.5rem;box-shadow:var(--shadow)}
+.pulse{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.pulse svg{width:100%;height:56px;color:var(--primary)}
+.pulse path{stroke-dasharray:400;stroke-dashoffset:400;animation:draw 2.4s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.facts{list-style:none;padding:0;margin:0;display:grid;gap:.8rem}
+.facts li{display:flex;gap:.7rem;align-items:flex-start}
+.dot{flex:none;width:28px;height:28px;border-radius:50%;background:var(--surface2);color:var(--primary);display:grid;place-items:center;font-weight:700}
+section{padding:clamp(2.2rem,5vw,4rem) 0}
+.alt{background:var(--surface2)}
+.grid{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:1.5rem}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem}
+.item p{margin:0;color:var(--muted)}
+.service-card{cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:245px;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.service-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.service-card:hover,.service-card:focus-visible{transform:translateY(-7px);box-shadow:0 16px 34px rgba(11,122,117,.18);border-color:var(--primary)}
+.service-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--surface2);color:var(--primary);font-size:1.65rem;margin-bottom:1rem;transition:transform .22s ease,background .22s ease}
+.service-card:hover .service-icon{transform:scale(1.08) rotate(-4deg);background:var(--line)}
+.service-card h3{font-size:1.15rem;margin-bottom:.45rem}
+.service-card .service-action{margin-top:auto;padding-top:1.2rem}
+.service-card .btn{width:100%;transition:transform .2s ease,filter .2s ease}
+.service-card .btn:hover{transform:translateY(-2px)}
+.service-intro{max-width:680px}
+@keyframes servicePop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.service-card{animation:servicePop .55s ease both}
+.service-card:nth-child(2){animation-delay:.05s}.service-card:nth-child(3){animation-delay:.1s}
+.service-card:nth-child(4){animation-delay:.15s}.service-card:nth-child(5){animation-delay:.2s}.service-card:nth-child(6){animation-delay:.25s}
+@media (prefers-reduced-motion:reduce){.service-card{animation:none;transition:none}.service-card:hover,.service-card .btn:hover{transform:none}}
+.steps{counter-reset:s;list-style:none;padding:0;margin:1.5rem 0 0;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.2rem;position:relative}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--primary);color:var(--primary-ink);font-weight:700;margin-bottom:.6rem}
+.book{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;align-items:start}
+form{display:grid;gap:1rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+label{display:grid;gap:.35rem;font-weight:700}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:.7rem .8rem;min-height:48px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.hint{font-weight:400;color:var(--muted);font-size:.9rem}
+.appt{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;border:1px solid var(--line);border-left:6px solid var(--primary);border-radius:12px;padding:1rem;margin-bottom:.8rem;background:var(--bg)}
+.appt b{display:block}
+.appt .acts{display:flex;gap:.5rem;align-items:center}
+.empty{color:var(--muted);padding:1rem;border:2px dashed var(--line);border-radius:12px;text-align:center}
+.tabs{display:flex;gap:.5rem;margin:.6rem 0 1rem;flex-wrap:wrap}
+.tabs button{min-height:48px;padding:0 1.4rem;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.tabs button:hover{border-color:var(--primary)}
+.tabs button[aria-selected="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.tabs button[data-tab="cancel"][aria-selected="true"]{background:var(--err-bg);border-color:var(--err);color:var(--err)}
+.tabpane[hidden]{display:none}
+.call{display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.phone{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:700;color:var(--primary);text-decoration:none}
+footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);background:var(--surface)}
+#toasts{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));display:grid;gap:.6rem;z-index:50;width:min(380px,100% - 2rem)}
+.toast{display:flex;gap:.7rem;align-items:flex-start;padding:.9rem 1rem;border-radius:12px;font-weight:700;background:var(--ok-bg);color:var(--ok);border:2px solid var(--ok);box-shadow:var(--shadow);animation:in .3s ease}
+.toast.error{background:var(--err-bg);color:var(--err);border-color:var(--err)}
+.toast svg{flex:none;width:22px;height:22px;margin-top:2px}
+.toast span{color:var(--ink);font-weight:400;display:block}
+@keyframes in{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:820px){
+  .hero,.book{grid-template-columns:1fr}
+  nav{order:3;width:100%;margin-left:0;overflow-x:auto;flex-wrap:nowrap;gap:1.2rem}.two{grid-template-columns:1fr}
+  .tools{margin-left:auto}
+}
+@media (max-width:520px){.row{grid-template-columns:1fr}#themeLabel{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.pulse path{stroke-dashoffset:0}html{scroll-behavior:auto}}
+
+.search-strip{display:grid;grid-template-columns:1.2fr .8fr;gap:.8rem;align-items:end;margin:1rem 0}
+.search-strip p{grid-column:1/-1;margin:0}
+.service-card[hidden]{display:none}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:80;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-backdrop.open{display:flex}
+.modal{width:min(680px,100%);max-height:min(90vh,850px);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:1.4rem;box-shadow:var(--shadow)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.modal-head h2{margin:0}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.modal form{margin-top:.7rem}
+.staff-record{border:1px solid var(--line);border-radius:12px;padding:.9rem;margin:.7rem 0;background:var(--bg)}
+.staff-record .row{margin-top:.5rem}
+.staff-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.status-note{padding:.8rem;border-radius:10px;background:var(--surface2);color:var(--ink);margin:.7rem 0}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--surface);padding:.7rem;z-index:100}
+.skip-link:focus{left:1rem;top:1rem}
+@media(max-width:620px){.search-strip,.modal-grid{grid-template-columns:1fr}.search-strip p{grid-column:auto}.modal{padding:1rem}}
+
+
+.test-task-list{display:grid;gap:.65rem;margin:1rem 0}
+.test-task{display:grid;grid-template-columns:minmax(180px,1fr) auto minmax(190px,.55fr);gap:.8rem;align-items:center;padding:.85rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.test-task p{margin:.2rem 0 0;color:var(--muted);font-size:.92rem}
+.test-task label{margin:0}
+.test-task select{min-height:42px}
+.test-record{padding:.8rem;margin:.6rem 0;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+@media(max-width:760px){.test-task{grid-template-columns:1fr}.test-task .btn{justify-self:start}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#home" aria-label="Smarter-Book home">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="var(--primary)"/><path d="M17 10h6v7h7v6h-7v7h-6v-7h-7v-6h7z" fill="var(--primary-ink)"/></svg>
+      Smarter-Book
+    </a>
+    <nav aria-label="Main">
+      <a href="#home">Home</a><a href="#services">Services</a><a href="#appointment">Appointment</a><a href="#contact">Contact</a><a href="#about">About</a>
+    </nav>
+    <div class="tools">
+      <button class="icon-btn" id="accountBtn" type="button">Sign in</button>
+      <div class="seg" role="group" aria-label="Text size"><button type="button" data-size="normal" aria-pressed="true" aria-label="Standard text" style="font-size:14px">A</button><button type="button" data-size="large" aria-pressed="false" aria-label="Large text" style="font-size:18px">A</button><button type="button" data-size="xlarge" aria-pressed="false" aria-label="Extra large text" style="font-size:23px">A</button></div>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch to night mode">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"></svg>
+        <span id="themeLabel">Night</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top"><div class="page" id="p-home">
+<div class="wrap hero">
+  <div>
+    <h1>Book your visit from home, not from the queue.</h1>
+    <p class="lead">Smarter-Book lets patients of Seetsa Health Centre in Ha Seetsa, Leribe, book, move or cancel an appointment at any hour, so the long walk is only for the day you are seen.</p>
+    <div class="cta">
+      <a class="btn" href="#appointment">Book an appointment</a>
+      <a class="btn ghost" href="#contact">Prefer to phone?</a>
+    </div>
+  </div>
+  <div class="panel" aria-label="Why patients use Smarter-Book">
+    <div class="pulse"><svg viewBox="0 0 300 56" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 30h80l14-22 20 44 16-34 12 12h158"/></svg></div>
+    <ul class="facts">
+      <li><span class="dot">✓</span><div><b>Open all hours online</b><br><span class="hint">The clinic sees patients until lunch. You can book at night.</span></div></li>
+      <li><span class="dot">✓</span><div><b>Appointment reminder preferences</b><br><span class="hint">So a busy week does not cost you your slot.</span></div></li>
+      <li><span class="dot">✓</span><div><b>Records kept safe</b><br><span class="hint">Digital, backed up, never lost in a paper pile.</span></div></li>
+    </ul>
+  </div>
+</div>
+
+<section class="alt"><div class="wrap"><h2>Built around what patients told us</h2><p class="lead">We interviewed two patients and a member of hospital staff. Here is what they told us, and what Smarter-Book does about it.</p><div class="grid"><div class="item"><h3>The clinic is far away</h3><p>Book from home, so you only travel on the day you are seen.</p></div><div class="item"><h3>The clinic closes at lunch</h3><p>Book at any hour and pick a morning slot, so you can plan to arrive in time.</p></div><div class="item"><h3>People forget appointments</h3><p>Choose an SMS reminder before your date.</p></div><div class="item"><h3>Not everyone is confident with phones</h3><p>Three text sizes, big buttons and a phone-booking option.</p></div><div class="item"><h3>Paper records go missing</h3><p>Our design replaces the paper book with a secure digital record.</p></div><div class="item"><h3>Changing a booking is hard</h3><p>Reschedule or cancel without visiting the clinic.</p></div></div><div class="cta" style="margin-top:1.5rem"><a class="btn" href="#appointment">Book an appointment</a><a class="btn ghost" href="#about">Read our research</a></div></div></section></div><div class="page" id="p-services"><section id="services" class="alt">
+  <div class="wrap">
+    <h1 class="ph">Healthcare services</h1>
+    <p class="lead service-intro">Choose the care you need. Select a service below and we’ll take you straight to the appointment form with your choice already selected.</p>
+    <div class="search-strip" role="search" aria-label="Search doctors and services">
+      <label>Search doctors or services
+        <input id="serviceSearch" type="search" placeholder="Search services or clinician names" autocomplete="off">
+      </label>
+      <label>Clinician
+        <select id="doctorSearch">
+          <option value="">Any available clinician</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Nurse">Nurse</option>
+        </select>
+      </label>
+      <p class="hint" id="searchMessage" aria-live="polite">Search the services listed below. Clinician options are sample options for this prototype.</p>
+    </div>
+    <div class="grid" id="serviceGrid">
+      <article class="item service-card" data-book-service="General check-up" role="link" tabindex="0" aria-label="Book General check-up">
+        <div class="service-icon" aria-hidden="true">🩺</div>
+        <h3>General check-up</h3>
+        <p>Routine consultation with a nurse or doctor.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="General check-up">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+      <article class="item service-card" data-book-service="Maternal and child health" role="link" tabindex="0" aria-label="Book Maternal and child health">
+        <div class="service-icon" aria-hidden="true">🤱</div>
+        <h3>Maternal and child health</h3>
+        <p>Antenatal visits, baby weighing and immunisation.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="Maternal and child health">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+      <article class="item service-card" data-book-service="Chronic care review" role="link" tabindex="0" aria-label="Book Chronic care review">
+        <div class="service-icon" aria-hidden="true">❤️</div>
+        <h3>Chronic care review</h3>
+        <p>Repeat visits for blood pressure, diabetes and HIV care.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="Chronic care review">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+      <article class="item service-card" data-book-service="Laboratory tests" role="link" tabindex="0" aria-label="Book Laboratory tests">
+        <div class="service-icon" aria-hidden="true">🧪</div>
+        <h3>Laboratory tests</h3>
+        <p>Blood and urine tests with results at the clinic.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="Laboratory tests">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+      <article class="item service-card" data-book-service="Dispensary" role="link" tabindex="0" aria-label="Book Dispensary">
+        <div class="service-icon" aria-hidden="true">💊</div>
+        <h3>Dispensary</h3>
+        <p>Collect repeat medication on a set day.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="Dispensary">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+      <article class="item service-card" data-book-service="Family planning" role="link" tabindex="0" aria-label="Book Family planning">
+        <div class="service-icon" aria-hidden="true">🌿</div>
+        <h3>Family planning</h3>
+        <p>Private consultations and supplies.</p>
+        <div class="service-action"><button class="btn small" type="button" data-book-service="Family planning">Book this service <span aria-hidden="true">→</span></button></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section><div class="wrap"><h2>Ways to book</h2><div class="grid"><div class="item"><h3>Online, any hour</h3><p>Book, reschedule or cancel from your phone without travelling.</p><p style="margin-top:.8rem"><a class="btn small" href="#appointment">Book online</a></p></div><div class="item"><h3>By phone</h3><p>For patients who can’t use the system. A nurse books for you.</p><p style="margin-top:.8rem"><a class="btn small ghost" href="#contact">See phone number</a></p></div><div class="item"><h3>Easy to read</h3><p>Choose standard, large or extra large text at the top of any page.</p></div><div class="item"><h3>Reminders</h3><p>Pick when we remind you: 2 days before, 1 day before, or the morning of your visit.</p></div></div></div></section></div><div class="page" id="p-appointment"><section id="how">
+  <div class="wrap">
+    <h1 class="ph">Book your appointment in four steps</h1>
+    <ol class="steps">
+      <li><h3>Choose a service</h3><p>Tell us why you are coming.</p></li>
+      <li><h3>Pick a morning slot</h3><p>Slots run before lunch, when the clinic is open.</p></li>
+      <li><h3>Get confirmation</h3><p>You see it on screen straight away.</p></li>
+      <li><h3>Get a reminder</h3><p>Your reminder preference is saved. Automated messages require a connected messaging service.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="book" class="alt">
+  <div class="wrap">
+    <h2>Manage your appointment</h2>
+    <div class="tabs" role="tablist" aria-label="Appointment actions"><button type="button" role="tab" data-tab="book" aria-selected="true">Book</button><button type="button" role="tab" data-tab="reschedule" aria-selected="false">Reschedule</button><button type="button" role="tab" data-tab="cancel" aria-selected="false">Cancel</button></div><p class="lead" id="tabHelp">Fill in the details to book a new appointment. Fields marked with * are required.</p>
+    <div class="book">
+      <div class="panel">
+        <form id="rform" class="tabpane" data-pane="reschedule" novalidate hidden><label>Which appointment? *<select id="rsel"></select></label><div class="row"><label>New date *<input id="rdate" type="date" required></label><label>New time *<select id="rtime"></select></label></div><button class="btn" type="submit">Reschedule appointment</button></form>
+        <form id="xform" class="tabpane" data-pane="cancel" novalidate hidden><label>Which appointment? *<select id="xsel"></select></label><label style="grid-template-columns:auto 1fr;align-items:center;gap:.7rem"><input id="xok" type="checkbox" style="width:26px;min-height:26px"><span>Yes, I want to cancel this appointment</span></label><button class="btn danger" type="submit">Cancel appointment</button></form>
+        <form id="form" class="tabpane" data-pane="book" novalidate>
+          <label>Full name *<input id="name" autocomplete="name" required></label>
+          <div class="row">
+            <label>Phone number *<input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+266 5800 0000" required></label>
+            <label>Service *
+              <select id="service" required>
+                <option value="">Choose a service</option>
+                <option>General check-up</option><option>Maternal and child health</option><option>Chronic care review</option><option>Laboratory tests</option><option>Dispensary</option><option>Family planning</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Date *<input id="date" type="date" required></label>
+            <label>Time *<select id="time" required></select></label>
+          </div>
+          <label>Preferred clinician
+            <select id="doctor">
+              <option value="Any available clinician">Any available clinician</option>
+              <option value="Doctor">Doctor</option>
+              <option value="Nurse">Nurse</option>
+            </select>
+            <span class="hint">Available times update when you choose a date. Final availability must be confirmed by clinic staff.</span>
+          </label>
+          <label>Reminder
+            <select id="remind"><option value="1 day before">Reminder preference: 1 day before</option><option value="2 days before">Reminder preference: 2 days before</option><option value="Morning of visit">Reminder preference: morning of visit</option></select>
+          </label>
+          <label>Notes <span class="hint">(optional)</span><textarea id="notes" rows="2"></textarea></label>
+          <div class="cta">
+            <button class="btn" id="submitBtn" type="submit">Book appointment</button>
+            <button class="btn ghost" id="cancelEdit" type="button" hidden>Keep old time</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <h3>Your upcoming appointments</h3>
+        <p class="hint" id="patientStatus">Sign in to view and manage your appointments.</p>
+        <div id="list" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="call">
+  <div class="wrap">
+    <div class="panel call">
+      <div>
+        <h2>Can’t use the app? Call us.</h2>
+        <p class="lead" style="margin:0">A nurse will book for you by phone. Leave your name and number if we miss you.</p>
+      </div>
+      <a class="phone" href="tel:+26600000000">+266 0000 0000</a>
+    </div>
+  </div>
+</section>
+</div><div class="page" id="p-contact"><section><div class="wrap"><h1 class="ph">Contact Seetsa Health Centre</h1><p class="lead">Can’t use the app, or have a question? Reach us here.</p><div class="two"><div class="fx" style="margin-top:0"><div class="item"><h3>Where we are</h3><p>Seetsa Health Centre, Ha Seetsa, Leribe, Lesotho. The clinic is in a remote area away from residential communities, and taxis are limited. Plan your trip and book a morning slot.</p></div><div class="item"><h3>Opening hours</h3><p>Patients are seen until lunch. Online booking is open 24 hours, so you can book at night and arrive in the morning.</p></div><div class="item"><h3>Phone booking</h3><p>A nurse can book, move or cancel an appointment for you.</p><a class="phone" href="tel:+26600000000">+266 0000 0000</a></div></div><div class="panel"><h2>Ask for a call back</h2><form id="cform" novalidate><label>Full name *<input id="cname" autocomplete="name" required></label><label>Phone number *<input id="cphone" type="tel" inputmode="tel" autocomplete="tel" required></label><label>How can we help? *<textarea id="cmsg" rows="4" required></textarea></label><button class="btn" type="submit">Send request</button></form></div></div></div></section></div><div class="page" id="p-about"><section><div class="wrap"><h1 class="ph">About Smarter-Book</h1><p class="lead">Smarter-Book is a hospital appointment booking system for Seetsa Health Centre in Ha Seetsa, Leribe. It makes booking less stressful and more convenient for patients and nurses.</p><p><button class="btn small ghost" id="jumpToTesting" type="button">Open usability testing checklist</button></p><h2>The problem</h2><p class="lead" style="margin:0">Booking the traditional way means walking long distances, waiting in long queues, and sometimes arriving after operating hours and not being served. The centre is in an isolated rural setting, far from residential communities.</p></div></section><section class="alt"><div class="wrap"><h2>How we researched it</h2><p class="lead">We ran interviews and surveys with three people: an elderly patient who visits regularly, a middle-aged patient, and a member of hospital staff. We asked about:</p><ul><li>Hospital operating hours</li><li>Appointment reminders</li><li>Existing ways of booking</li><li>Security and storage of patient information</li><li>Features for different age groups</li><li>Challenges of travelling to the hospital</li><li>Booking and rescheduling</li></ul></div></section><section><div class="wrap"><h2>What we found, and what we built</h2><div class="fx"><div class="item"><h3>Hard to reach and book</h3><p>The clinic is far away and public transport is limited, which hits elderly patients hardest. Smarter-Book lets you book from home.</p></div><div class="item"><h3>Inconvenient operating hours</h3><p>Hours end at lunch, and delays on the road can make patients arrive too late. You can book any time and choose a morning slot.</p></div><div class="item"><h3>No appointment reminders</h3><p>Patients forget their dates. You choose when an SMS reminder is sent.</p></div><div class="item"><h3>Different ages and technology skills</h3><p>The site has simple navigation, three text sizes, large clear buttons, and phone booking for those who can’t use it.</p></div><div class="item"><h3>Records can be lost</h3><p>Paper records get misplaced. The design uses an organised, secure digital record instead.</p></div><div class="item"><h3>Rescheduling needs a visit</h3><p>Patients had to travel to the hospital to change a booking. You can reschedule or cancel online.</p></div></div></div></section>
+<section class="alt" id="usability-test">
+  <div class="wrap">
+    <h2>Usability testing</h2>
+    <p class="lead">Use this checklist while at least three people try the website. Give each participant the same six tasks. Observe what happens and record the result after each task.</p>
+    <div class="panel">
+      <div class="row">
+        <label for="testParticipant">Participant
+          <select id="testParticipant">
+            <option value="Participant 1">Participant 1</option>
+            <option value="Participant 2">Participant 2</option>
+            <option value="Participant 3">Participant 3</option>
+          </select>
+        </label>
+        <label for="testDate">Test date
+          <input id="testDate" type="date">
+        </label>
+      </div>
+      <p class="hint">Use participant numbers rather than recording people's private information. Do not mark a task complete until you have observed the participant trying it.</p>
+      <div class="test-task-list">
+        <div class="test-task">
+          <div><b>1. Register as a patient</b><p>Create a patient account using the Register option, then return to the website.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="register">Start task</button>
+          <label>Result<select data-test-result="register"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+        <div class="test-task">
+          <div><b>2. Search for a medical service</b><p>Open Services and find a service, for example General check-up or Family planning.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="search">Start task</button>
+          <label>Result<select data-test-result="search"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+        <div class="test-task">
+          <div><b>3. Book an appointment</b><p>Choose a service, select an available date and time, and submit a booking.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="book">Start task</button>
+          <label>Result<select data-test-result="book"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+        <div class="test-task">
+          <div><b>4. Reschedule an appointment</b><p>Open Reschedule, select an existing appointment and choose another available date and time.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="reschedule">Start task</button>
+          <label>Result<select data-test-result="reschedule"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+        <div class="test-task">
+          <div><b>5. Cancel an appointment</b><p>Open Cancel, select an appointment and confirm the cancellation.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="cancel">Start task</button>
+          <label>Result<select data-test-result="cancel"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+        <div class="test-task">
+          <div><b>6. Find telephone assistance</b><p>Open Contact and locate the telephone booking assistance information.</p></div>
+          <button class="btn small ghost" type="button" data-test-go="phone">Start task</button>
+          <label>Result<select data-test-result="phone"><option value="Not tested">Not tested</option><option>Completed without help</option><option>Completed with help</option><option>Could not complete</option></select></label>
+        </div>
+      </div>
+      <label for="testNotes">Observer notes: where did the participant hesitate, make mistakes, or ask for help?
+        <textarea id="testNotes" rows="4" placeholder="Record what you observed. Do not write personal medical information."></textarea>
+      </label>
+      <div class="cta" style="margin-top:1rem">
+        <button class="btn" id="saveTestRecord" type="button">Save participant results</button>
+        <button class="btn ghost" id="exportTestRecords" type="button">Export test results</button>
+      </div>
+      <p class="hint" id="testSaveStatus" aria-live="polite">Results are saved in this browser only. Save one record for each participant.</p>
+      <div id="savedTestRecords" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+</div></main>
+
+<footer>
+  <div class="wrap">
+    <b>Seetsa Health Centre</b> · Ha Seetsa, Leribe, Lesotho<br>
+    Patients are seen until lunch. Online booking is available 24 hours.<br>
+    <span class="hint">For emergencies, go to the nearest clinic or call emergency services. Do not wait for an appointment.</span>
+    <p><button class="btn small ghost" id="staffAccessBtn" type="button">Staff access</button></p>
+  </div>
+</footer>
+
+
+<a class="skip-link" href="#top">Skip to main content</a>
+
+<div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal">
+    <div class="modal-head"><h2 id="authTitle">Patient account</h2><button class="icon-btn" type="button" data-close-modal="authModal" aria-label="Close">✕</button></div>
+    <p class="hint">Create an account or sign in to manage your own appointments on this device.</p>
+    <div class="tabs" role="tablist" aria-label="Account actions">
+      <button type="button" data-auth-tab="login" aria-selected="true">Sign in</button>
+      <button type="button" data-auth-tab="register" aria-selected="false">Register</button>
+    </div>
+    <form id="loginForm" data-auth-pane="login">
+      <label>Email address *<input id="loginEmail" type="email" autocomplete="email" required></label>
+      <label>Password *<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+    <form id="registerForm" data-auth-pane="register" hidden>
+      <label>Full name *<input id="regName" autocomplete="name" required></label>
+      <label>Phone number *<input id="regPhone" type="tel" autocomplete="tel" required></label>
+      <label>Email address *<input id="regEmail" type="email" autocomplete="email" required></label>
+      <label>Create password *<input id="regPassword" type="password" minlength="6" autocomplete="new-password" required><span class="hint">Use at least 6 characters for this demonstration.</span></label>
+      <button class="btn" type="submit">Create patient account</button>
+    </form>
+    <p class="hint">Prototype notice: accounts are stored only in this browser. This is not secure production authentication and must be connected to a protected server before real patient information is used.</p>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="staffModal" role="dialog" aria-modal="true" aria-labelledby="staffTitle">
+  <div class="modal">
+    <div class="modal-head"><h2 id="staffTitle">Staff workspace</h2><button class="icon-btn" type="button" data-close-modal="staffModal" aria-label="Close">✕</button></div>
+    <div id="staffLoginArea">
+      <p>Authorized staff can review appointment records and manage available time slots.</p>
+      <form id="staffLoginForm">
+        <label>Staff username *<input id="staffUser" autocomplete="username" required></label>
+        <label>Staff password *<input id="staffPass" type="password" autocomplete="current-password" required></label>
+        <button class="btn" type="submit">Open staff workspace</button>
+      </form>
+      <p class="status-note"><b>Demonstration access only:</b> username <code>staff</code>, password <code>Seetsa2026!</code>. Replace this with real staff authentication on a secure server before deployment.</p>
+    </div>
+    <div id="staffDashboard" hidden>
+      <div class="status-note">Staff mode: records and blocked slots are stored locally in this browser for demonstration.</div>
+      <h3>Manage appointment schedule</h3>
+      <form id="blockSlotForm" class="modal-grid">
+        <label>Date to block *<input id="blockDate" type="date" required></label>
+        <label>Time to block *<select id="blockTime" required></select></label>
+        <button class="btn" type="submit">Block this slot</button>
+      </form>
+      <div id="blockedSlots"></div>
+      <h3 style="margin-top:1.2rem">Patient appointment records</h3>
+      <label>Find records<input id="staffSearch" type="search" placeholder="Search patient, service or phone"></label>
+      <div id="staffRecords" aria-live="polite"></div>
+      <button class="btn ghost small" id="staffLogout" type="button">Sign out of staff workspace</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var root=document.documentElement, $=function(i){return document.getElementById(i)};
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+  /* Theme */
+  var sun='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+  var moon='<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+  function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function paintTheme(){var d=isDark();$('themeIcon').innerHTML=d?sun:moon;$('themeLabel').textContent=d?'Day':'Night';$('themeBtn').setAttribute('aria-label',d?'Switch to day mode':'Switch to night mode')}
+  var st=store('sb-theme');if(st)root.setAttribute('data-theme',st);paintTheme();
+  $('themeBtn').onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);store('sb-theme',n);paintTheme();toast('success','Switched to '+(n==='dark'?'night':'day')+' mode')};
+  matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',paintTheme);
+
+  /* Text size */
+  function setSize(s){if(s==='normal')root.removeAttribute('data-text');else root.setAttribute('data-text',s);store('sb-text',s);var bs=document.querySelectorAll('.seg button');for(var i=0;i<bs.length;i++)bs[i].setAttribute('aria-pressed',bs[i].dataset.size===s)}
+  var ts=store('sb-text');setSize(ts==='large'||ts==='xlarge'?ts:'normal');
+  document.querySelector('.seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;setSize(b.dataset.size);toast('success','Text size changed',b.getAttribute('aria-label')+' is on.')};
+
+  /* Toasts */
+  var ico={success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l3 3 5-6"/></svg>',error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 16.5v.5"/></svg>'};
+  function toast(type,title,msg){
+    var t=document.createElement('div');t.className='toast'+(type==='error'?' error':'');
+    t.innerHTML=ico[type]+'<div>'+title+(msg?'<span>'+msg+'</span>':'')+'</div>';
+    $('toasts').appendChild(t);
+    setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(function(){t.remove()},300)},4500);
+  }
+
+  /* Slots and date */
+  var times=['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00'];
+  $('time').innerHTML='<option value="">Choose a time</option>'+times.map(function(t){return '<option>'+t+'</option>'}).join('');
+  var today=new Date();today.setMinutes(today.getMinutes()-today.getTimezoneOffset());
+  var todayStr=today.toISOString().slice(0,10);$('date').min=todayStr;
+
+  var pages=['home','services','appointment','contact','about'];
+  function route(){var h=location.hash.slice(1);if(pages.indexOf(h)<0)h='home';
+    pages.forEach(function(p){$('p-'+p).classList.toggle('active',p===h)});
+    var as=document.querySelectorAll('nav a');for(var i=0;i<as.length;i++){if(as[i].getAttribute('href')==='#'+h)as[i].setAttribute('aria-current','page');else as[i].removeAttribute('aria-current')}
+    document.title=h.charAt(0).toUpperCase()+h.slice(1)+' | Smarter-Book';window.scrollTo(0,0)}
+  window.addEventListener('hashchange',route);route();
+
+  /* Service cards: choose a service and jump to its booking form */
+  $('serviceGrid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-book-service]');
+    if(!b)return;
+    var chosen=b.getAttribute('data-book-service');
+    $('service').value=chosen;
+    location.hash='appointment';
+    showTab('book');
+    setTimeout(function(){
+      $('service').value=chosen;
+      $('form').scrollIntoView({behavior:'smooth',block:'center'});
+      $('name').focus({preventScroll:true});
+      toast('success','Service selected',chosen+' is ready in your appointment form.');
+    },80);
+  });
+  $('serviceGrid').addEventListener('keydown',function(e){
+    var card=e.target.closest('article.service-card[data-book-service]');
+    if(!card || (e.key!=='Enter' && e.key!==' '))return;
+    e.preventDefault();
+    card.click();
+  });
+
+  $('cform').addEventListener('submit',function(e){e.preventDefault();var n=$('cname').value.trim(),p=$('cphone').value.trim(),m=$('cmsg').value.trim();
+    if(!n||!/^[+\d][\d\s-]{6,}$/.test(p)||!m){toast('error','Please complete every field','Add your name, a valid phone number and a short message.');return}
+    $('cform').reset();store('sb-callback-request',JSON.stringify({name:n,phone:p,message:m,createdAt:new Date().toISOString()}));toast('success','Request saved on this device','This prototype does not send the request to clinic staff. Please phone the clinic to confirm assistance.')});
+  /* Data */
+  var appts=[];try{appts=JSON.parse(store('sb-appts')||'[]')}catch(e){appts=[]}
+  var editing=null;
+  function save(){store('sb-appts',JSON.stringify(appts))}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function fmt(d){return new Date(d+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
+
+  function render(){
+    var l=$('list');appts.sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)});fillSel();
+    if(!appts.length){l.innerHTML='<div class="empty">No appointments yet. Fill in the form to book your first one.</div>';return}
+    appts.sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time)});
+    l.innerHTML=appts.map(function(a){return '<div class="appt"><div><b>'+esc(a.service)+'</b>'+fmt(a.date)+' at '+a.time+'<br><span class="hint">'+esc(a.name)+' · Reminder: '+esc(a.remind)+'</span></div><div class="acts"><button class="btn small ghost" data-act="edit" data-id="'+a.id+'">Reschedule</button><button class="btn small danger" data-act="del" data-id="'+a.id+'">Cancel</button></div></div>'}).join('');
+  }
+  function resetForm(){editing=null;$('form').reset();$('submitBtn').textContent='Book appointment';$('cancelEdit').hidden=true}
+
+  $('list').onclick=function(e){
+    var b=e.target.closest('button');if(!b)return;
+    var a=appts.filter(function(x){return String(x.id)===b.dataset.id})[0];if(!a)return;
+    if(b.dataset.act==='del'){
+      appts=appts.filter(function(x){return x!==a});save();render();if(editing===a.id)resetForm();
+      toast('success','Appointment cancelled',esc(a.service)+' on '+fmt(a.date)+' was removed.');
+    }else{
+      editing=a.id;$('name').value=a.name;$('phone').value=a.phone;$('service').value=a.service;$('date').value=a.date;$('time').value=a.time;$('doctor').value=a.doctor||'Any available clinician';$('remind').value=a.remind;$('notes').value=a.notes||'';
+      $('submitBtn').textContent='Save new time';$('cancelEdit').hidden=false;
+      $('form').scrollIntoView({behavior:'smooth',block:'center'});$('date').focus();
+      toast('success','Rescheduling','Choose a new date or time, then save.');
+    }
+  };
+  $('cancelEdit').onclick=function(){resetForm();toast('success','Nothing changed','Your appointment keeps its old time.')};
+
+  /* Book / Reschedule / Cancel tabs */
+  $('rtime').innerHTML=$('time').innerHTML;$('rdate').min=todayStr;
+  function fillSel(){var o=appts.length?appts.map(function(a){return '<option value="'+a.id+'">'+esc(a.service)+' · '+fmt(a.date)+' at '+a.time+'</option>'}).join(''):'<option value="">No appointments yet</option>';$('rsel').innerHTML=o;$('xsel').innerHTML=o}
+  var help={book:'Fill in the details to book a new appointment. Fields marked with * are required.',reschedule:'Choose the appointment you want to move, then pick a new date and time.',cancel:'Choose the appointment you want to cancel, then confirm.'};
+  function showTab(t){var ts=document.querySelectorAll('.tabs button'),i;for(i=0;i<ts.length;i++)ts[i].setAttribute('aria-selected',ts[i].dataset.tab===t);var ps=document.querySelectorAll('.tabpane');for(i=0;i<ps.length;i++)ps[i].hidden=ps[i].dataset.pane!==t;$('tabHelp').textContent=help[t]}
+  document.querySelector('.tabs').onclick=function(e){var b=e.target.closest('button');if(b)showTab(b.dataset.tab)};
+  $('list').onclick=function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.act==='del'){showTab('cancel');$('xsel').value=b.dataset.id;$('xok').checked=false}else{showTab('reschedule');$('rsel').value=b.dataset.id;$('rdate').focus()}$('form').parentNode.scrollIntoView({behavior:'smooth',block:'center'})};
+  function pick(id){return appts.filter(function(x){return String(x.id)===$(id).value})[0]}
+  $('rform').addEventListener('submit',function(e){e.preventDefault();var a=pick('rsel');
+    if(!a){toast('error','No appointment to reschedule','Book an appointment first.');return}
+    var d=$('rdate').value,t=$('rtime').value;
+    if(!d||!t){toast('error','Choose a new date and time','Both are needed to reschedule.');return}
+    if(d<todayStr){toast('error','That date has passed','Choose today or a later date.');return}
+    if(appts.some(function(x){return x!==a&&x.date===d&&x.time===t})){toast('error','That time is already booked','Choose another time on '+fmt(d)+'.');return}
+    a.date=d;a.time=t;save();$('rform').reset();render();
+    toast('success','Appointment rescheduled','Now '+fmt(d)+' at '+t+'. Your reminder preference is saved: '+a.remind.toLowerCase()+'.')});
+  $('xform').addEventListener('submit',function(e){e.preventDefault();var a=pick('xsel');
+    if(!a){toast('error','No appointment to cancel','You have no booked appointments.');return}
+    if(!$('xok').checked){toast('error','Please confirm','Tick the box to confirm you want to cancel.');return}
+    appts=appts.filter(function(x){return x!==a});save();$('xform').reset();render();
+    toast('success','Appointment cancelled',esc(a.service)+' on '+fmt(a.date)+' was removed.')});
+
+  $('form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v={name:$('name').value.trim(),phone:$('phone').value.trim(),service:$('service').value,date:$('date').value,time:$('time').value,remind:$('remind').value,notes:$('notes').value.trim()};
+    var missing=[];
+    if(!v.name)missing.push('name');if(!/^[+\d][\d\s-]{6,}$/.test(v.phone))missing.push('a valid phone number');
+    if(!v.service)missing.push('service');if(!v.date)missing.push('date');if(!v.time)missing.push('time');
+    if(missing.length){toast('error','Please add '+missing.join(', '),'Then press the button again.');return}
+    if(v.date<todayStr){toast('error','That date has passed','Choose today or a later date.');return}
+    var clash=appts.some(function(a){return a.date===v.date&&a.time===v.time&&a.id!==editing});
+    if(clash){toast('error','That time is already booked','Choose another time on '+fmt(v.date)+'.');return}
+    if(editing){
+      appts.forEach(function(a){if(a.id===editing){for(var k in v)a[k]=v[k]}});
+      toast('success','Appointment rescheduled','Now '+fmt(v.date)+' at '+v.time+'. Your reminder preference is saved: '+v.remind.toLowerCase()+'.');
+    }else{
+      v.id=Date.now();appts.push(v);
+      toast('success','Appointment booked','See you '+fmt(v.date)+' at '+v.time+'. Your reminder preference is saved: '+v.remind.toLowerCase()+'.');
+    }
+    save();render();resetForm();
+  });
+  render();
+
+  /* Patient accounts, clinician/service search, live slot filtering and staff tools.
+     This is a browser-only coursework prototype, not production patient-record software. */
+  var users=[];try{users=JSON.parse(store('sb-users')||'[]')}catch(e){users=[]}
+  var currentUser=null;
+  try{var savedUser=JSON.parse(store('sb-current-user')||'null');if(savedUser)currentUser=savedUser}catch(e){}
+  var staffMode=false;
+  var blocked=[];try{blocked=JSON.parse(store('sb-blocked-slots')||'[]')}catch(e){blocked=[]}
+  function saveUsers(){store('sb-users',JSON.stringify(users))}
+  function saveBlocked(){store('sb-blocked-slots',JSON.stringify(blocked))}
+  function openModal(id){$(id).classList.add('open');var f=$(id).querySelector('input,button');if(f)f.focus()}
+  function closeModal(id){$(id).classList.remove('open')}
+  document.querySelectorAll('[data-close-modal]').forEach(function(b){b.addEventListener('click',function(){closeModal(b.dataset.closeModal)})});
+  document.querySelectorAll('.modal-backdrop').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open')})});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('.modal-backdrop.open').forEach(function(m){m.classList.remove('open')})});
+  function updateAccountUI(){
+    $('accountBtn').textContent=currentUser?'Account: '+currentUser.name.split(' ')[0]+' · Sign out':'Sign in';
+    $('patientStatus').textContent=currentUser?'Signed in as '+currentUser.email+'. Your appointments are shown below.':'Sign in to view and manage your appointments.';
+  }
+  function authTab(tab){
+    document.querySelectorAll('[data-auth-tab]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.authTab===tab?'true':'false')});
+    document.querySelectorAll('[data-auth-pane]').forEach(function(f){f.hidden=f.dataset.authPane!==tab});
+  }
+  document.querySelectorAll('[data-auth-tab]').forEach(function(b){b.addEventListener('click',function(){authTab(b.dataset.authTab)})});
+  $('accountBtn').addEventListener('click',function(){
+    if(currentUser){currentUser=null;store('sb-current-user','');render();updateAccountUI();toast('success','Signed out','You have signed out of your patient account.')}
+    else{authTab('login');openModal('authModal')}
+  });
+  $('registerForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var u={name:$('regName').value.trim(),phone:$('regPhone').value.trim(),email:$('regEmail').value.trim().toLowerCase(),password:$('regPassword').value};
+    if(!u.name||!/^[+\d][\d\s-]{6,}$/.test(u.phone)||!u.email||u.password.length<6){toast('error','Check your details','Enter a name, valid phone, email and password of at least 6 characters.');return}
+    if(users.some(function(x){return x.email===u.email})){toast('error','Account already exists','Sign in using that email address.');return}
+    users.push(u);saveUsers();currentUser={name:u.name,email:u.email,phone:u.phone};store('sb-current-user',JSON.stringify(currentUser));
+    $('registerForm').reset();closeModal('authModal');updateAccountUI();render();$('name').value=u.name;$('phone').value=u.phone;
+    toast('success','Account created','You are signed in and can now book appointments.');
+  });
+  $('loginForm').addEventListener('submit',function(e){
+    e.preventDefault();var em=$('loginEmail').value.trim().toLowerCase(),pw=$('loginPassword').value;
+    var u=users.filter(function(x){return x.email===em&&x.password===pw})[0];
+    if(!u){toast('error','Sign-in failed','Check your email and password, or register first.');return}
+    currentUser={name:u.name,email:u.email,phone:u.phone};store('sb-current-user',JSON.stringify(currentUser));
+    $('loginForm').reset();closeModal('authModal');updateAccountUI();render();
+    toast('success','Welcome back',u.name+'. Your appointments are now available.');
+  });
+
+  /* Service search: the clinician choices are sample categories, not a live doctor directory. */
+  $('serviceSearch').addEventListener('input',filterServices);
+  $('doctorSearch').addEventListener('change',filterServices);
+  function filterServices(){
+    var q=$('serviceSearch').value.trim().toLowerCase(),doctor=$('doctorSearch').value,count=0;
+    document.querySelectorAll('#serviceGrid .service-card').forEach(function(card){
+      var match=(card.textContent.toLowerCase().indexOf(q)>=0)&&(!doctor||card.textContent.toLowerCase().indexOf('nurse')>=0||doctor==='Doctor');
+      card.hidden=!match;if(match)count++;
+    });
+    $('searchMessage').textContent=count+' service option(s) shown. Clinician categories are sample options; confirm the assigned clinician with the clinic.';
+  }
+
+  /* Filter appointments to the signed-in patient; staff can see all records. */
+  var originalSave=save;
+  save=function(){store('sb-appts',JSON.stringify(appts));};
+  function visibleAppointments(){return staffMode?appts:currentUser?appts.filter(function(a){return a.owner===currentUser.email}):[]}
+  var originalRender=render;
+  render=function(){
+    var all=appts;appts=visibleAppointments();originalRender();appts=all;
+    if(!currentUser&&!staffMode)$('list').innerHTML='<div class="empty">Please sign in or register to view and manage your appointments.</div>';
+    updateAccountUI();
+  };
+
+  /* Date-based availability: remove already booked and staff-blocked times. */
+  function slotOptions(date,selected){
+    var available=times.filter(function(t){
+      var booked=appts.some(function(a){return a.date===date&&a.time===t&&a.id!==editing});
+      var blockedHere=blocked.some(function(b){return b.date===date&&b.time===t});
+      return !booked&&!blockedHere;
+    });
+    $('time').innerHTML='<option value="">Choose an available time</option>'+available.map(function(t){return '<option'+(t===selected?' selected':'')+'>'+t+'</option>'}).join('');
+    if(!available.length)$('time').innerHTML='<option value="">No available times</option>';
+  }
+  $('date').addEventListener('change',function(){slotOptions($('date').value,'')});
+  $('rdate').addEventListener('change',function(){
+    var d=$('rdate').value,free=times.filter(function(t){return !appts.some(function(a){return a.date===d&&a.time===t})&&!blocked.some(function(b){return b.date===d&&b.time===t})});
+    $('rtime').innerHTML='<option value="">Choose an available time</option>'+free.map(function(t){return '<option>'+t+'</option>'}).join('');
+  });
+  $('blockTime').innerHTML=times.map(function(t){return '<option>'+t+'</option>'}).join('');
+  $('blockDate').min=todayStr;
+  var baseBookSubmit=$('form').onsubmit;
+  $('form').addEventListener('submit',function(e){
+    if(!currentUser){e.preventDefault();e.stopImmediatePropagation();openModal('authModal');toast('error','Sign in required','Register or sign in before booking.');return}
+  },true);
+
+  /* Staff-only schedule and record management. */
+  $('staffAccessBtn').addEventListener('click',function(){staffMode=false;$('staffLoginArea').hidden=false;$('staffDashboard').hidden=true;openModal('staffModal')});
+  $('staffLoginForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    if($('staffUser').value.trim()!=='staff'||$('staffPass').value!=='Seetsa2026!'){toast('error','Access denied','The staff demonstration credentials do not match.');return}
+    staffMode=true;$('staffLoginArea').hidden=true;$('staffDashboard').hidden=false;$('staffLoginForm').reset();renderStaff();toast('success','Staff workspace opened','You can manage slots and review local appointment records.');
+  });
+  function renderStaff(){
+    $('blockedSlots').innerHTML=blocked.length?'<p><b>Blocked slots</b></p>'+blocked.map(function(b,i){return '<div class="staff-record">'+fmt(b.date)+' at '+b.time+' <button class="btn small danger" data-unblock="'+i+'">Restore slot</button></div>'}).join(''):'<p class="hint">No blocked slots.</p>';
+    var q=$('staffSearch').value.toLowerCase();
+    var records=appts.filter(function(a){return [a.name,a.phone,a.service,a.owner].join(' ').toLowerCase().indexOf(q)>=0});
+    $('staffRecords').innerHTML=records.length?records.map(function(a){return '<div class="staff-record"><b>'+esc(a.name)+'</b><br>'+esc(a.service)+' · '+fmt(a.date)+' at '+esc(a.time)+'<br><span class="hint">'+esc(a.phone)+' · '+esc(a.owner||'Walk-in record')+'</span><div class="staff-actions"><button class="btn small ghost" data-staff-edit="'+a.id+'">Edit appointment</button><button class="btn small danger" data-staff-delete="'+a.id+'">Delete record</button></div></div>'}).join(''):'<div class="empty">No matching appointment records.</div>';
+  }
+  $('blockSlotForm').addEventListener('submit',function(e){
+    e.preventDefault();var d=$('blockDate').value,t=$('blockTime').value;
+    if(!d||d<todayStr){toast('error','Choose a valid date','The date must be today or later.');return}
+    if(blocked.some(function(b){return b.date===d&&b.time===t})){toast('error','Already blocked','That slot is already unavailable.');return}
+    if(appts.some(function(a){return a.date===d&&a.time===t})){toast('error','Slot already booked','Reschedule the appointment before blocking this time.');return}
+    blocked.push({date:d,time:t});saveBlocked();renderStaff();toast('success','Slot blocked',fmt(d)+' at '+t+' is no longer bookable.');
+  });
+  $('blockedSlots').addEventListener('click',function(e){
+    var b=e.target.closest('[data-unblock]');if(!b)return;blocked.splice(Number(b.dataset.unblock),1);saveBlocked();renderStaff();toast('success','Slot restored','The time is available again.');
+  });
+  $('staffSearch').addEventListener('input',renderStaff);
+  $('staffRecords').addEventListener('click',function(e){
+    var del=e.target.closest('[data-staff-delete]'),edit=e.target.closest('[data-staff-edit]');
+    if(del){var id=Number(del.dataset.staffDelete);appts=appts.filter(function(a){return Number(a.id)!==id});save();renderStaff();render();toast('success','Record deleted','The appointment record was removed from this browser.');return}
+    if(edit){
+      var id=Number(edit.dataset.staffEdit),a=appts.filter(function(x){return Number(x.id)===id})[0];if(!a)return;
+      var nd=prompt('Enter new date (YYYY-MM-DD):',a.date);if(nd===null)return;
+      var nt=prompt('Enter new time (HH:MM):',a.time);if(nt===null)return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(nd)||times.indexOf(nt)<0){toast('error','Invalid schedule','Use a valid date and one of the listed clinic times.');return}
+      a.date=nd;a.time=nt;save();renderStaff();render();toast('success','Appointment updated','The patient record has been updated.');
+    }
+  });
+  $('staffLogout').addEventListener('click',function(){staffMode=false;closeModal('staffModal');render();toast('success','Staff signed out','Staff workspace closed.')});
+
+  /* Associate new bookings with the signed-in patient. */
+  var bookingForm=$('form');
+  bookingForm.addEventListener('submit',function(){
+    bookingForm.dataset.previousMax=String(appts.reduce(function(m,a){return Math.max(m,Number(a.id)||0)},0));
+  },true);
+  bookingForm.addEventListener('submit',function(){
+    if(!currentUser)return;
+    var previous=Number(bookingForm.dataset.previousMax||0);
+    var created=appts.filter(function(a){return Number(a.id)>previous}).sort(function(a,b){return b.id-a.id})[0];
+    if(created){created.owner=currentUser.email;created.doctor=$('doctor').value;save();render()}
+  });
+  bookingForm.addEventListener('submit',function(e){
+    var d=$('date').value,t=$('time').value;
+    if(blocked.some(function(b){return b.date===d&&b.time===t})){
+      e.preventDefault();e.stopImmediatePropagation();toast('error','That slot is unavailable','Clinic staff have blocked this time. Choose another slot.');return;
+    }
+  },true);
+  /* Keep the chosen clinician in each appointment record. */
+  bookingForm.addEventListener('submit',function(){
+    if(!currentUser)return;
+    setTimeout(function(){var a=appts.slice().sort(function(x,y){return y.id-x.id})[0];if(a&&!a.doctor){a.doctor=$('doctor').value;save()}},0);
+  });
+  updateAccountUI();render();
+
+  /* Usability testing log: participant results are self-reported by the observer. */
+  $('jumpToTesting').addEventListener('click',function(){$('usability-test').scrollIntoView({behavior:'smooth',block:'start'})});
+  var usabilityRecords=[];
+  try{usabilityRecords=JSON.parse(store('sb-usability-tests')||'[]')}catch(e){usabilityRecords=[]}
+  var testTasks=['register','search','book','reschedule','cancel','phone'];
+  function renderTestRecords(){
+    var host=$('savedTestRecords');if(!host)return;
+    host.innerHTML=usabilityRecords.length?'<h3 style="margin-top:1rem">Saved test sessions</h3>'+usabilityRecords.map(function(r,i){
+      var completed=testTasks.filter(function(k){return r.results[k]&&r.results[k]!=='Not tested'}).length;
+      return '<div class="test-record"><b>'+esc(r.participant)+'</b> · '+esc(r.date)+'<br>'+completed+'/6 tasks recorded'+(r.notes?'<p>'+esc(r.notes)+'</p>':'')+'<button class="btn small ghost" type="button" data-remove-test="'+i+'">Remove record</button></div>';
+    }).join(''):'<p class="hint">No participant results saved yet.</p>';
+  }
+  document.querySelectorAll('[data-test-go]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var task=b.dataset.testGo;
+      if(task==='register'){authTab('register');openModal('authModal');return}
+      if(task==='search'){location.hash='services';setTimeout(function(){$('serviceSearch').focus()},100);return}
+      if(task==='phone'){location.hash='contact';return}
+      location.hash='appointment';
+      setTimeout(function(){showTab(task);$('book').scrollIntoView({behavior:'smooth',block:'center'})},100);
+    });
+  });
+  $('saveTestRecord').addEventListener('click',function(){
+    var results={};testTasks.forEach(function(k){results[k]=document.querySelector('[data-test-result="'+k+'"]').value});
+    var participant=$('testParticipant').value;
+    var record={participant:participant,date:$('testDate').value||new Date().toISOString().slice(0,10),results:results,notes:$('testNotes').value.trim(),savedAt:new Date().toISOString()};
+    var existing=usabilityRecords.findIndex(function(r){return r.participant===participant&&r.date===record.date});
+    if(existing>=0)usabilityRecords[existing]=record;else usabilityRecords.push(record);
+    store('sb-usability-tests',JSON.stringify(usabilityRecords));
+    $('testSaveStatus').textContent='Saved results for '+participant+'. You can now select the next participant.';
+    renderTestRecords();toast('success','Test results saved',participant+' results have been saved in this browser.');
+  });
+  $('testParticipant').addEventListener('change',function(){
+    var r=usabilityRecords.filter(function(x){return x.participant===$('testParticipant').value}).slice(-1)[0];
+    testTasks.forEach(function(k){document.querySelector('[data-test-result="'+k+'"]').value=r&&r.results[k]||'Not tested'});
+    $('testNotes').value=r?r.notes||'':'';
+    $('testDate').value=r?r.date:'';
+  });
+  $('savedTestRecords').addEventListener('click',function(e){
+    var b=e.target.closest('[data-remove-test]');if(!b)return;
+    usabilityRecords.splice(Number(b.dataset.removeTest),1);store('sb-usability-tests',JSON.stringify(usabilityRecords));renderTestRecords();
+  });
+  $('exportTestRecords').addEventListener('click',function(){
+    if(!usabilityRecords.length){toast('error','No results yet','Save at least one participant test before exporting.');return}
+    var blob=new Blob([JSON.stringify(usabilityRecords,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Smarter-Book_Usability_Test_Results.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  });
+  $('testDate').value=new Date().toISOString().slice(0,10);
+  renderTestRecords();
+
+})();
+</script>
+</body>
+</html>
