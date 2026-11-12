@@ -95,6 +95,8 @@ section{padding:clamp(2.2rem,5vw,4rem) 0}
 .steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--primary);color:var(--primary-ink);font-weight:700;margin-bottom:.6rem}
 .book{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;align-items:start}
 form{display:grid;gap:1rem}
+/* Keep inactive sign-in/register forms completely hidden even when form styles are applied. */
+form[hidden],[data-auth-pane][hidden]{display:none!important}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 label{display:grid;gap:.35rem;font-weight:700}
 input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:.7rem .8rem;min-height:48px;width:100%}
@@ -154,6 +156,30 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
 .test-record{padding:.8rem;margin:.6rem 0;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
 @media(max-width:760px){.test-task{grid-template-columns:1fr}.test-task .btn{justify-self:start}}
 
+
+/* Professional finish: visual refinements only; existing page structure is retained. */
+:root{--shadow:0 12px 34px rgba(8,58,61,.10)}
+body{letter-spacing:.005em}
+header{box-shadow:0 4px 18px rgba(13,43,46,.045)}
+.brand{letter-spacing:-.025em}
+.brand svg{filter:drop-shadow(0 3px 5px rgba(11,122,117,.18))}
+nav a{font-size:.96rem}
+.tools{align-items:center;flex-wrap:wrap}
+.btn,.icon-btn,.tabs button{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
+.btn:not(.danger):hover{box-shadow:0 7px 18px rgba(11,122,117,.16)}
+.icon-btn:hover,.tabs button:hover{transform:translateY(-1px)}
+.panel,.item,.steps li{box-shadow:0 5px 20px rgba(13,43,46,.045)}
+.panel{border-radius:18px}
+.item{border-radius:15px}
+input,select,textarea{transition:border-color .18s ease,box-shadow .18s ease}
+.modal{border-radius:20px}
+.modal-backdrop{backdrop-filter:blur(5px)}
+.modal-head{padding-bottom:.75rem;border-bottom:1px solid var(--line)}
+.status-note{border:1px solid var(--line)}
+#accountBtn{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+#doctorAccessBtn{background:var(--surface);border-color:var(--primary);color:var(--primary)}
+@media(max-width:820px){.tools{width:100%;margin-left:0;justify-content:flex-start}.tools #accountBtn,.tools #doctorAccessBtn{flex:1}}
+
 </style>
 </head>
 <body>
@@ -167,7 +193,8 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
       <a href="#home">Home</a><a href="#services">Services</a><a href="#appointment">Appointment</a><a href="#contact">Contact</a><a href="#about">About</a>
     </nav>
     <div class="tools">
-      <button class="icon-btn" id="accountBtn" type="button">Sign in</button>
+      <button class="icon-btn" id="accountBtn" type="button">Patient Login</button>
+      <button class="icon-btn" id="doctorAccessBtn" type="button">Doctor Login</button>
       <div class="seg" role="group" aria-label="Text size"><button type="button" data-size="normal" aria-pressed="true" aria-label="Standard text" style="font-size:14px">A</button><button type="button" data-size="large" aria-pressed="false" aria-label="Large text" style="font-size:18px">A</button><button type="button" data-size="xlarge" aria-pressed="false" aria-label="Extra large text" style="font-size:23px">A</button></div>
       <button class="icon-btn" id="themeBtn" aria-label="Switch to night mode">
         <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"></svg>
@@ -398,7 +425,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
     <b>Seetsa Health Centre</b> · Ha Seetsa, Leribe, Lesotho<br>
     Patients are seen until lunch. Online booking is available 24 hours.<br>
     <span class="hint">For emergencies, go to the nearest clinic or call emergency services. Do not wait for an appointment.</span>
-    <p><button class="btn small ghost" id="staffAccessBtn" type="button">Staff access</button></p>
+    <p><button class="btn small ghost" id="staffAccessBtn" type="button">Doctor Login</button></p>
   </div>
 </footer>
 
@@ -407,8 +434,8 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
 
 <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal">
-    <div class="modal-head"><h2 id="authTitle">Patient account</h2><button class="icon-btn" type="button" data-close-modal="authModal" aria-label="Close">✕</button></div>
-    <p class="hint">Create an account or sign in to manage your own appointments on this device.</p>
+    <div class="modal-head"><h2 id="authTitle">Patient Portal</h2><button class="icon-btn" type="button" data-close-modal="authModal" aria-label="Close">✕</button></div>
+    <p class="hint" id="authDescription">Enter your email and password to access your patient account.</p>
     <div class="tabs" role="tablist" aria-label="Account actions">
       <button type="button" data-auth-tab="login" aria-selected="true">Sign in</button>
       <button type="button" data-auth-tab="register" aria-selected="false">Register</button>
@@ -425,24 +452,24 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
       <label>Create password *<input id="regPassword" type="password" minlength="6" autocomplete="new-password" required><span class="hint">Use at least 6 characters for this demonstration.</span></label>
       <button class="btn" type="submit">Create patient account</button>
     </form>
-    <p class="hint">Prototype notice: accounts are stored only in this browser. This is not secure production authentication and must be connected to a protected server before real patient information is used.</p>
+    <p class="hint">Prototype notice: patient accounts are stored only in this browser. This demonstration is not secure production authentication. Connect it to a protected server before using real patient information.</p>
   </div>
 </div>
 
 <div class="modal-backdrop" id="staffModal" role="dialog" aria-modal="true" aria-labelledby="staffTitle">
   <div class="modal">
-    <div class="modal-head"><h2 id="staffTitle">Staff workspace</h2><button class="icon-btn" type="button" data-close-modal="staffModal" aria-label="Close">✕</button></div>
+    <div class="modal-head"><h2 id="staffTitle">Doctor Portal</h2><button class="icon-btn" type="button" data-close-modal="staffModal" aria-label="Close">✕</button></div>
     <div id="staffLoginArea">
-      <p>Authorized staff can review appointment records and manage available time slots.</p>
+      <p>Doctors can access the appointment workspace, review patient bookings and manage available time slots.</p>
       <form id="staffLoginForm">
-        <label>Staff username *<input id="staffUser" autocomplete="username" required></label>
-        <label>Staff password *<input id="staffPass" type="password" autocomplete="current-password" required></label>
-        <button class="btn" type="submit">Open staff workspace</button>
+        <label>Doctor username *<input id="staffUser" autocomplete="username" required></label>
+        <label>Doctor password *<input id="staffPass" type="password" autocomplete="current-password" required></label>
+        <button class="btn" type="submit">Sign in to Doctor Portal</button>
       </form>
-      <p class="status-note"><b>Demonstration access only:</b> username <code>staff</code>, password <code>Seetsa2026!</code>. Replace this with real staff authentication on a secure server before deployment.</p>
+      <p class="status-note"><b>Demo doctor login:</b> username <code>doctor</code>, password <code>SeetsaDoctor2026!</code>. Replace these demonstration credentials with secure, individually assigned doctor accounts before deployment.</p>
     </div>
     <div id="staffDashboard" hidden>
-      <div class="status-note">Staff mode: records and blocked slots are stored locally in this browser for demonstration.</div>
+      <div class="status-note">Doctor workspace: appointment records and blocked slots are stored locally in this browser for demonstration.</div>
       <h3>Manage appointment schedule</h3>
       <form id="blockSlotForm" class="modal-grid">
         <label>Date to block *<input id="blockDate" type="date" required></label>
@@ -614,12 +641,24 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
   document.querySelectorAll('.modal-backdrop').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open')})});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('.modal-backdrop.open').forEach(function(m){m.classList.remove('open')})});
   function updateAccountUI(){
-    $('accountBtn').textContent=currentUser?'Account: '+currentUser.name.split(' ')[0]+' · Sign out':'Sign in';
+    $('accountBtn').textContent=currentUser?'Patient: '+currentUser.name.split(' ')[0]+' · Sign out':'Patient Login';
     $('patientStatus').textContent=currentUser?'Signed in as '+currentUser.email+'. Your appointments are shown below.':'Sign in to view and manage your appointments.';
   }
   function authTab(tab){
-    document.querySelectorAll('[data-auth-tab]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.authTab===tab?'true':'false')});
-    document.querySelectorAll('[data-auth-pane]').forEach(function(f){f.hidden=f.dataset.authPane!==tab});
+    document.querySelectorAll('[data-auth-tab]').forEach(function(b){
+      var selected=b.dataset.authTab===tab;
+      b.setAttribute('aria-selected',selected?'true':'false');
+      b.setAttribute('tabindex',selected?'0':'-1');
+    });
+    document.querySelectorAll('[data-auth-pane]').forEach(function(f){
+      var active=f.dataset.authPane===tab;
+      f.hidden=!active;
+      f.style.display=active?'grid':'none';
+    });
+    $('authDescription').textContent=tab==='register'
+      ?'Create your patient account. Complete the required fields below.'
+      :'Enter your email and password to access your patient account.';
+    $('authTitle').textContent=tab==='register'?'Register as a Patient':'Patient Sign In';
   }
   document.querySelectorAll('[data-auth-tab]').forEach(function(b){b.addEventListener('click',function(){authTab(b.dataset.authTab)})});
   $('accountBtn').addEventListener('click',function(){
@@ -690,11 +729,19 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
   },true);
 
   /* Staff-only schedule and record management. */
-  $('staffAccessBtn').addEventListener('click',function(){staffMode=false;$('staffLoginArea').hidden=false;$('staffDashboard').hidden=true;openModal('staffModal')});
+  function openDoctorPortal(){
+    if(staffMode){closeModal('staffModal');staffMode=false;render();}
+    $('staffLoginArea').hidden=false;
+    $('staffDashboard').hidden=true;
+    $('staffLoginForm').reset();
+    openModal('staffModal');
+  }
+  $('staffAccessBtn').addEventListener('click',openDoctorPortal);
+  $('doctorAccessBtn').addEventListener('click',openDoctorPortal);
   $('staffLoginForm').addEventListener('submit',function(e){
     e.preventDefault();
-    if($('staffUser').value.trim()!=='staff'||$('staffPass').value!=='Seetsa2026!'){toast('error','Access denied','The staff demonstration credentials do not match.');return}
-    staffMode=true;$('staffLoginArea').hidden=true;$('staffDashboard').hidden=false;$('staffLoginForm').reset();renderStaff();toast('success','Staff workspace opened','You can manage slots and review local appointment records.');
+    if($('staffUser').value.trim()!=='doctor'||$('staffPass').value!=='SeetsaDoctor2026!'){toast('error','Access denied','The doctor demonstration credentials do not match.');return}
+    currentUser=null;store('sb-current-user','');staffMode=true;$('staffLoginArea').hidden=true;$('staffDashboard').hidden=false;$('staffLoginForm').reset();updateAccountUI();renderStaff();toast('success','Doctor portal opened','You can review appointment records and manage available slots.');
   });
   function renderStaff(){
     $('blockedSlots').innerHTML=blocked.length?'<p><b>Blocked slots</b></p>'+blocked.map(function(b,i){return '<div class="staff-record">'+fmt(b.date)+' at '+b.time+' <button class="btn small danger" data-unblock="'+i+'">Restore slot</button></div>'}).join(''):'<p class="hint">No blocked slots.</p>';
@@ -724,7 +771,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);backgr
       a.date=nd;a.time=nt;save();renderStaff();render();toast('success','Appointment updated','The patient record has been updated.');
     }
   });
-  $('staffLogout').addEventListener('click',function(){staffMode=false;closeModal('staffModal');render();toast('success','Staff signed out','Staff workspace closed.')});
+  $('staffLogout').addEventListener('click',function(){staffMode=false;closeModal('staffModal');render();toast('success','Doctor signed out','Doctor workspace closed.')});
 
   /* Associate new bookings with the signed-in patient. */
   var bookingForm=$('form');
